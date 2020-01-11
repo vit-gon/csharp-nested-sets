@@ -61,7 +61,7 @@ namespace DataStructureTest.Services
             }
             else
             {
-                // TODO:
+                categoryRepository.DeleteCategoryThatHasDescendants(category);
             }
         }
 

@@ -48,7 +48,7 @@ namespace DataStructureTest.Data
 
             cmd.CommandText = @"CREATE TABLE [Categories] (
                 [Id] INTEGER PRIMARY KEY,
-                [Lft] INT, rgt INT,
+                [Lft] INT, [Rgt] INT,
                 [Level] int,
                 [ParentId] int,
                 [Name] TEXT

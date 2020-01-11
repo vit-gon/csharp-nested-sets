@@ -1,5 +1,6 @@
 ﻿using DataStructureTest.Data;
 using DataStructureTest.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 
@@ -48,6 +49,44 @@ namespace DataStructureTest.Repositories
             return cat;
         }
 
+        internal void DeleteCategoryThatHasDescendants(Category category)
+        {
+            var cmd = new SQLiteCommand(connection);
+            int rgt = category.Rgt;
+            int lft = category.Lft;
+
+            cmd.CommandText = @"UPDATE [Categories] SET Level = Level - 1, ParentId = @ParentId WHERE Level = @Level AND Lft > @rootLft AND Rgt < @rootRgt";
+            cmd.Parameters.AddWithValue("@Level", category.Level + 1);
+            cmd.Parameters.AddWithValue("@ParentId", category.ParentId);
+            cmd.Parameters.AddWithValue("@rootLft", lft);
+            cmd.Parameters.AddWithValue("@rootRgt", rgt);
+            cmd.ExecuteNonQuery();
+
+            // update descendants left and right
+            cmd.CommandText = @"UPDATE [Categories] SET Lft = Lft - 1 WHERE Lft >= @rootLft AND Rgt <= @rootRgt";
+            cmd.Parameters.AddWithValue("@rootLft", lft);
+            cmd.Parameters.AddWithValue("@rootRgt", rgt);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"UPDATE [Categories] SET Rgt = Rgt - 1 WHERE Lft >= @rootLft AND Rgt <= @rootRgt";
+            cmd.Parameters.AddWithValue("@rootLft", lft);
+            cmd.Parameters.AddWithValue("@rootRgt", rgt);
+            cmd.ExecuteNonQuery();
+
+            // update all further nodes that are to the right of deleted node
+            cmd.CommandText = @"UPDATE [Categories] SET Lft = Lft - 2 WHERE Lft >= @num";
+            cmd.Parameters.AddWithValue("@num", rgt);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"UPDATE [Categories] SET Rgt = Rgt - 2 WHERE Rgt >= @num";
+            cmd.Parameters.AddWithValue("@num", rgt);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"DELETE FROM [Categories] WHERE Id  = @Id";
+            cmd.Parameters.AddWithValue("@Id", category.Id);
+            cmd.ExecuteNonQuery();
+        }
+
         public List<Category> FindAll()
         {
             var cmd = new SQLiteCommand(connection);
@@ -76,11 +115,11 @@ namespace DataStructureTest.Repositories
             int rgt = category.Rgt;
             int lft = category.Lft;
 
-            cmd.CommandText = @"UPDATE [Categories] SET `Lft` = `Lft` + 2 WHERE `Lft` >= @num";
+            cmd.CommandText = @"UPDATE [Categories] SET Lft = Lft + 2 WHERE Lft >= @num";
             cmd.Parameters.AddWithValue("@num", lft);
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = @"UPDATE [Categories] SET `Rgt` = `Rgt` + 2 WHERE `Rgt` >= @num";
+            cmd.CommandText = @"UPDATE [Categories] SET Rgt = Rgt + 2 WHERE Rgt >= @num";
             cmd.Parameters.AddWithValue("@num", rgt);
             cmd.ExecuteNonQuery();
 

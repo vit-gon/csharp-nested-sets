@@ -3,7 +3,6 @@ using DataStructureTest.Models;
 using DataStructureTest.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DataSctructureTest
 {
@@ -15,6 +14,8 @@ namespace DataSctructureTest
             initDatabase.Init();
 
             CategoryService categoryService = new CategoryService();
+            Category articles = categoryService.FindByName("articles");
+            categoryService.DeleteNode(articles);
             List<Category> categories = categoryService.FindAll();
 
             NestedSetService nestedSetService = new NestedSetService();
