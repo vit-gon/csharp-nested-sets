@@ -32,6 +32,11 @@ namespace DataStructureTest.Data
             articlesCategory = categoryService.FindByName("articles");
             categoryService.PrependTo(articlesCategory, "research articles");
 
+            Category researchCategory = categoryService.FindByName("research articles");
+            categoryService.PrependTo(researchCategory, "single");
+            researchCategory = categoryService.FindByName("research articles");
+            categoryService.PrependTo(researchCategory, "team");
+
             Category booksCategory = categoryService.FindByName("books");
             categoryService.PrependTo(booksCategory, "fiction");
             booksCategory = categoryService.FindByName("books");

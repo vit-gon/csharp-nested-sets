@@ -43,6 +43,11 @@ namespace DataStructureTest.Services
             categoryRepository.InsertBefore(category, name);
         }
 
+        internal void MoveBefore(Category moveBeforeCategory, Category category)
+        {
+            categoryRepository.MoveBefore(moveBeforeCategory, category);
+        }
+
         public void PrependTo(Category category, string name)
         {
             categoryRepository.PrependTo(category, name);
@@ -68,6 +73,11 @@ namespace DataStructureTest.Services
         public bool IsLeaf(Category category)
         {
             return category.Rgt - category.Lft == 1;
+        }
+
+        public void MoveAfter(Category moveAfterCategory, Category category)
+        {
+            categoryRepository.MoveAfter(moveAfterCategory, category);
         }
     }
 }

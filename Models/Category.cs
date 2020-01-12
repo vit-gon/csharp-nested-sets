@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DataStructureTest.Models
 {
-    class Category
+    public class Category
     {
         public int Id { get; set; }
         public int Lft { get; set; }
