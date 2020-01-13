@@ -19,13 +19,17 @@ namespace DataSctructureTest
             List<Category> categories = categoryService.FindAll();
             PrintTree(categories);
 
-            //Category articles = categoryService.FindByName("articles");
-            //Category researchArticles = categoryService.FindByName("research articles");
-            //categoryService.MoveAfter(articles, researchArticles);
-
             Category articles = categoryService.FindByName("articles");
-            Category researchArticles = categoryService.FindByName("research articles");
-            categoryService.MoveBefore(articles, researchArticles);
+            Category researchArticles = categoryService.FindByName("fiction");
+            categoryService.MoveAfter(articles, researchArticles);
+            
+            //Category articles = categoryService.FindByName("books");
+            //Category researchArticles = categoryService.FindByName("research articles");
+            //categoryService.MoveBefore(articles, researchArticles);
+
+            //Category articles = categoryService.FindByName("books");
+            //Category researchArticles = categoryService.FindByName("fiction");
+            //categoryService.MoveBefore(articles, researchArticles);
 
             categories = categoryService.FindAll();
             PrintTree(categories);

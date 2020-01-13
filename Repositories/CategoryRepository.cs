@@ -88,9 +88,38 @@ namespace DataStructureTest.Repositories
             cmd.ExecuteNonQuery();
         }
 
+        /*
+         * Moves [category] before [moveBeforeCategory] correctly 
+         * only if [category]'s future location is to the right of current location
+         * 
+         * It means that [category.Rgt] should be less than [moveAfterCategory.Rgt]
+         * 
+         */
         internal void MoveAfter(Category moveAfterCategory, Category category)
         {
-            var cmd = new SQLiteCommand(connection);
+            SQLiteCommand cmd = null;
+            // if [category] will be to the left of [moveAfterCategory] call MoveBefore() method
+            if (category.Rgt > moveAfterCategory.Rgt)
+            {
+                cmd = new SQLiteCommand(connection);
+                cmd.CommandText = @"SELECT * FROM [Categories] WHERE Lft = @Lft";
+                cmd.Parameters.AddWithValue("@Lft", moveAfterCategory.Rgt + 1);
+
+                SQLiteDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                Category moveBeforeCategory = new Category();
+                moveBeforeCategory.Id = dr.GetInt32(0);
+                moveBeforeCategory.Lft = dr.GetInt32(1);
+                moveBeforeCategory.Rgt = dr.GetInt32(2);
+                moveBeforeCategory.Level = dr.GetInt32(3);
+                moveBeforeCategory.ParentId = dr.GetInt32(4);
+                moveBeforeCategory.Name = dr.GetString(5);
+
+                MoveBefore(moveBeforeCategory, category);
+                return;
+            }
+
+            cmd = new SQLiteCommand(connection);
             // for 'category' node and all its descendants
             int lftAndRgtIncrement = moveAfterCategory.Rgt - category.Rgt;
             // for all child nodes of 'moveAfterCategory' that are to the right of category
@@ -151,9 +180,38 @@ namespace DataStructureTest.Repositories
             cmd.ExecuteNonQuery();
         }
 
+        /*
+         * Moves [category] before [moveBeforeCategory] correctly 
+         * only if [category]'s future location is to the left of current location
+         * 
+         * It means that [category.Lft] should be more than [moveBeforeCategory.Lft]
+         * 
+         */
         internal void MoveBefore(Category moveBeforeCategory, Category category)
         {
-            var cmd = new SQLiteCommand(connection);
+            SQLiteCommand cmd = null;
+            //if [category] will be to the right of[moveBeforeCategory] call MoveAfter() method
+            if (category.Lft < moveBeforeCategory.Lft)
+            {
+                cmd = new SQLiteCommand(connection);
+                cmd.CommandText = @"SELECT * FROM [Categories] WHERE Rgt = @Rgt";
+                cmd.Parameters.AddWithValue("@Rgt", moveBeforeCategory.Lft - 1);
+
+                SQLiteDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                Category moveAfterCategory = new Category();
+                moveAfterCategory.Id = dr.GetInt32(0);
+                moveAfterCategory.Lft = dr.GetInt32(1);
+                moveAfterCategory.Rgt = dr.GetInt32(2);
+                moveAfterCategory.Level = dr.GetInt32(3);
+                moveAfterCategory.ParentId = dr.GetInt32(4);
+                moveAfterCategory.Name = dr.GetString(5);
+
+                MoveAfter(moveAfterCategory, category);
+                return;
+            }
+
+            cmd = new SQLiteCommand(connection);
             // for 'category' node and all its descendants
             int lftAndRgtDecrement = category.Lft - moveBeforeCategory.Lft;
             // for all child nodes of 'moveAfterCategory' that are to the left of category
